@@ -110,4 +110,5 @@ datainput   : reg PORT MAP (clk => clk, data => data,enable => enableD, output =
 swedatainput: reg PORT MAP (clk => clk, data => data,enable => enableS, output => output_data_SWE);
 channels    : regFile PORT MAP(clk => clk, Channel => output_data(2 downto 0), dataIn => output_data(16 downto 5), reset => resetReg, enable => enableR, dataOut1 => data1_sig, dataOut2 => data2_sig, dataOut3 => data3_sig) ;
 
+	
 end Behavioral;
