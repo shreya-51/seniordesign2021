@@ -13,4 +13,7 @@ This Means When we are Sending Instructions the data sent is as follows in the T
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 |Instruction| 13 | 12 | 1 |1 | 3 | 2 |
 |RST| 0000 0000 0000 0 | 0000 0000 0000 | 0 |1 | 000 | 00 |
-|CHAN3:VOLT 4.3 | 0000 0000 0000 0 | 011 0 0111 010 1   | 0 |0 | 010 | 00 | 
+|CHAN3:VOLT 4.9 | 0000 0000 0000 0 | 011111110101  | 0 |0 | 010 | 00 | 
+
+![image](https://user-images.githubusercontent.com/54678622/142094509-9a787975-b01e-477c-8ad6-d5c102bc357e.png)
+ 
