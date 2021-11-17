@@ -46,14 +46,25 @@ component counter_32 is
      );
  end component;
  
+ component counter_62 is
+    port (
+        cout   :out std_logic_vector (5 downto 0); 
+        enable :in  std_logic;                     
+        clk    :in  std_logic;                     
+        reset  :in  std_logic                      
+     );
+ end component;
+ 
 component FSm is
 	port(
 		CLK		 : in	std_logic;
 		DATA     : in   std_logic;
 		RESET    : in   std_logic;
 		COUNTER   : in   std_logic_vector(4 downto 0);
+		COUNTERSWE:in  std_logic_vector(5 downto 0);
 		enableD   :   out std_logic;
 		enableR   :   out std_logic;
+		resetSWE : out  std_logic;
 		DONE     : out  std_logic      
 	);
 end component;
@@ -81,14 +92,16 @@ end component;
 
 --counter signal 
 signal  count_sig: std_logic_vector(4 downto 0);
+signal  count_sigSweep: std_logic_vector(5 downto 0);
 signal output_data: std_logic_vector(31 downto 0);
 signal data1_sig, data2_sig, data3_sig: std_logic_vector(11 downto 0);
-signal enableD,enableR      : std_logic;
+signal enableD,enableR,resetSWE      : std_logic;
 
 begin
 
 count       : counter_32 PORT MAP (enable => '1', clk => clk, reset => reset, cout => count_sig);
-fsm_t       : fsm PORT MAP (clk =>clk, data =>data, reset => '0', counter => count_sig, done => done, enableD => enableD, enableR => enableR);
+count_swe   : counter_62 PORT MAP (enable => '1', clk => clk, reset => reset, cout => count_sigSweep);
+fsm_t       : fsm PORT MAP (clk =>clk, data =>data, reset => '0', counter => count_sig, counterSWE => count_sigSweep,done => done, enableD => enableD, enableR => enableR,resetSWE=>resetSWE);
 datainput   : reg PORT MAP (clk => clk, data => data,enable => enableD, output => output_data);
 channels    : regFile PORT MAP(clk => clk, Channel => output_data(2 downto 0), dataIn => output_data(16 downto 5), reset => output_data(3), enable => enableR, dataOut1 => data1_sig, dataOut2 => data2_sig, dataOut3 => data3_sig) ;
 
