@@ -25,3 +25,7 @@ NEXT TEST:
 
 ![image](https://user-images.githubusercontent.com/54678622/142094509-9a787975-b01e-477c-8ad6-d5c102bc357e.png)
  
+SWEEP COMMAND: 
+|SWE (MSB) | PADDED | FREQUENCY |Step Size | Value 2 | Value 1| PAD | RESET|CHANNEL|PADDED(LSB)|
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+|1|TBD|11|11|11|11|1|1|3|2
