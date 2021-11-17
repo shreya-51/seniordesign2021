@@ -64,7 +64,9 @@ component FSm is
 		COUNTERSWE:in  std_logic_vector(5 downto 0);
 		enableD   :   out std_logic;
 		enableR   :   out std_logic;
+		enableS   :  out std_logic;
 		resetSWE : out  std_logic;
+		rstreg : out  std_logic;
 		DONE     : out  std_logic      
 	);
 end component;
@@ -94,15 +96,18 @@ end component;
 signal  count_sig: std_logic_vector(4 downto 0);
 signal  count_sigSweep: std_logic_vector(5 downto 0);
 signal output_data: std_logic_vector(31 downto 0);
+signal output_data_SWE: std_logic_vector(31 downto 0);
 signal data1_sig, data2_sig, data3_sig: std_logic_vector(11 downto 0);
-signal enableD,enableR,resetSWE      : std_logic;
-
+signal enableD,enableR,resetSWE,enableS,resetReg      : std_logic;
+--TODO: map enableS to FSM 
 begin
 
 count       : counter_32 PORT MAP (enable => '1', clk => clk, reset => reset, cout => count_sig);
 count_swe   : counter_62 PORT MAP (enable => '1', clk => clk, reset => reset, cout => count_sigSweep);
-fsm_t       : fsm PORT MAP (clk =>clk, data =>data, reset => '0', counter => count_sig, counterSWE => count_sigSweep,done => done, enableD => enableD, enableR => enableR,resetSWE=>resetSWE);
+-- add enableS 
+fsm_t       : fsm PORT MAP (clk =>clk, data =>data, reset => '0', counter => count_sig, counterSWE => count_sigSweep,done => done, enableD => enableD, enableR => enableR,enableS => enableS,resetSWE=>resetSWE, rstReg => resetReg);
 datainput   : reg PORT MAP (clk => clk, data => data,enable => enableD, output => output_data);
-channels    : regFile PORT MAP(clk => clk, Channel => output_data(2 downto 0), dataIn => output_data(16 downto 5), reset => output_data(3), enable => enableR, dataOut1 => data1_sig, dataOut2 => data2_sig, dataOut3 => data3_sig) ;
+swedatainput: reg PORT MAP (clk => clk, data => data,enable => enableS, output => output_data_SWE);
+channels    : regFile PORT MAP(clk => clk, Channel => output_data(2 downto 0), dataIn => output_data(16 downto 5), reset => resetReg, enable => enableR, dataOut1 => data1_sig, dataOut2 => data2_sig, dataOut3 => data3_sig) ;
 
 end Behavioral;
