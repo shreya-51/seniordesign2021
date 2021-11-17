@@ -8,4 +8,7 @@ Ex: MCU Instruction:
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | 13 | 12 | 1 |1 | 3 | 2 |
 
-
+This Means When we are Sending Instructions the data sent is as follows in the TCL File: 
+| (MSB) PADDED | DATA | SWE| RESET|CHANNEL|PADDED(LSB)|
+|| 13 | 12 | 1 |1 | 3 | 2 |
+|INSTRUCTION| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
