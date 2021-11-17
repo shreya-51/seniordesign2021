@@ -65,6 +65,7 @@ component FSm is
 		enableD   :   out std_logic;
 		enableR   :   out std_logic;
 		enableS   :  out std_logic;
+		enableSWER: out std_logic;
 		resetSWE : out  std_logic;
 		rstreg : out  std_logic;
 		DONE     : out  std_logic      
@@ -79,11 +80,19 @@ component reg is
   output    :   out     std_logic_vector(31 downto 0));
 end component;
 
+component reg64 is
+  Port (
+  clk       :   in      std_logic;
+  data      :   in      std_logic;
+  enable    :   in      std_logic;
+  output    :   out     std_logic_vector(63 downto 0));
+end component;
+
 component regFile is
   Port (
     clk         :   in std_logic;
     Channel     :   in  std_logic_vector(2 downto 0);
-    dataIn     :     in std_logic_vector(11 downto 0); 
+    dataIn     :    in std_logic_vector(11 downto 0); 
     reset       :   in  std_logic;
     enable      :   in  std_logic;
     dataOut1     :   out std_logic_vector(11 downto 0); 
@@ -92,23 +101,38 @@ component regFile is
   );
 end component;
 
+component regFileSwe is
+  Port (
+    clk         :   in std_logic;
+    dataIn     :    in std_logic_vector(63 downto 0); 
+    reset       :   in  std_logic;
+    enable      :   in  std_logic;
+    freq     :   out std_logic_vector(11 downto 0); 
+    step     :   out std_logic_vector(11 downto 0);
+    dataStart     :   out std_logic_vector(11 downto 0);
+    dataStop     :   out std_logic_vector(11 downto 0)
+  );
+end component;
+
 --counter signal 
 signal  count_sig: std_logic_vector(4 downto 0);
 signal  count_sigSweep: std_logic_vector(5 downto 0);
 signal output_data: std_logic_vector(31 downto 0);
-signal output_data_SWE: std_logic_vector(31 downto 0);
-signal data1_sig, data2_sig, data3_sig: std_logic_vector(11 downto 0);
-signal enableD,enableR,resetSWE,enableS,resetReg      : std_logic;
+signal output_data_SWE: std_logic_vector(63 downto 0);
+signal data1_sig, data2_sig, data3_sig, freqSig, stepSig, dataStartSig, dataStopSig: std_logic_vector(11 downto 0);
+signal enableD,enableR,resetSWE,enableS,resetReg  , enableSWER    : std_logic;
 --TODO: map enableS to FSM 
 begin
 
 count       : counter_32 PORT MAP (enable => '1', clk => clk, reset => reset, cout => count_sig);
 count_swe   : counter_62 PORT MAP (enable => '1', clk => clk, reset => reset, cout => count_sigSweep);
 -- add enableS 
-fsm_t       : fsm PORT MAP (clk =>clk, data =>data, reset => '0', counter => count_sig, counterSWE => count_sigSweep,done => done, enableD => enableD, enableR => enableR,enableS => enableS,resetSWE=>resetSWE, rstReg => resetReg);
+fsm_t       : fsm PORT MAP (clk =>clk, data =>data, reset => '0', counter => count_sig, counterSWE => count_sigSweep,done => done, enableD => enableD, enableR => enableR,enableS => enableS,resetSWE=>resetSWE, rstReg => resetReg, enableSWER => enableSWER);
 datainput   : reg PORT MAP (clk => clk, data => data,enable => enableD, output => output_data);
-swedatainput: reg PORT MAP (clk => clk, data => data,enable => enableS, output => output_data_SWE);
+swedatainput: reg64 PORT MAP (clk => clk, data => data, enable => enableS, output => output_data_SWE);
+-- registerFile to hold start, stop, step size, frequency
+sweRegFile  : regFileSwe PORT MAP (clk => clk, dataIn => output_data_SWE, reset => '0', enable => enableSWER, freq => freqSig, step => stepSig, dataStart => dataStartSig, dataStop => dataStopSig);
+
 channels    : regFile PORT MAP(clk => clk, Channel => output_data(2 downto 0), dataIn => output_data(16 downto 5), reset => resetReg, enable => enableR, dataOut1 => data1_sig, dataOut2 => data2_sig, dataOut3 => data3_sig) ;
 
-	
 end Behavioral;
