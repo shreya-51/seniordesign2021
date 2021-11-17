@@ -1,0 +1,64 @@
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date: 11/16/2021 06:34:46 PM
+-- Design Name: 
+-- Module Name: regFile - Behavioral
+-- Project Name: 
+-- Target Devices: 
+-- Tool Versions: 
+-- Description: 
+-- 
+-- Dependencies: 
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
+
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+
+entity regFileSwe is
+  Port (
+    clk         :   in std_logic;
+    dataIn     :    in std_logic_vector(63 downto 0); 
+    reset       :   in  std_logic;
+    enable      :   in  std_logic;
+    freq     :   out std_logic_vector(11 downto 0); 
+    step     :   out std_logic_vector(11 downto 0);
+    dataStart     :   out std_logic_vector(11 downto 0);
+    dataStop     :   out std_logic_vector(11 downto 0)
+  );
+end regFileSwe;
+
+architecture Behavioral of regFileSwe is
+
+  type t_regF is array(0 to 7) of std_logic_vector(11 downto 0);
+  signal regFArray : t_regF;
+begin
+    process(clk) is
+    begin
+    if (rising_edge(clk)) then
+            if(reset = '1') then -- have to check if reset to clear to make it all equal 0
+                regFArray <= (others =>(others =>'0')); -- make all registers = 0
+               --Check if ELSEIF ENABLE W = 1 you WRITE REGISTER
+             elsif(enable = '1') then
+                regFArray(0) <=  dataIn(50 downto 39);
+                regFArray(1) <=  dataIn(38 downto 27);
+                regFArray(2) <=  dataIn(26 downto 15);
+                regFArray(3) <=  dataIn(14 downto 3);
+            end if;
+    end if;
+    end process;
+    
+    freq <= regFArray(0);
+    step <= regFArray(1);
+    dataStart <= regFArray(2);
+    dataStop <= regFArray(2);
+end Behavioral;
