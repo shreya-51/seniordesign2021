@@ -6,5 +6,6 @@ fsm_tb.tcl is test bench
 Ex: MCU Instruction:
 | (MSB) PADDED | DATA | SWE| RESET|CHANNEL|PADDED(LSB)|
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| Content Cell  | Content Cell  |
-| Content Cell  | Content Cell  |
+| ------------- | 12 | 1 |1 | 3 | 2 |
+| 00000000   | 00000000000  |0 | 0 | 000 | 00 |
+
