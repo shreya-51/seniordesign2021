@@ -84,7 +84,7 @@ run 10 ns
 add_force data 0
 run 40 ns
 run 10 ns
-#TESTING SET CHANNEL 3:  00000000 00000011 00111010 100010 00 
+#TESTING SET CHANNEL 3:  00000000 00000011 00111010 100010 00
 add_force data 0
 run  80 ns
 run  60 ns
@@ -107,5 +107,25 @@ add_force data 1
 run 10 ns
 add_force data 0
 run 10 ns
+add_force data 0
+run 20 ns
+#TESTING SET CHANNEL 3: setting to be all 1 in data! 
+#dumby 13 bits are 0
+add_force data 0
+run  130 ns 
+#all 12 data bits are 1 
+add_force data 1
+run 120 ns
+#the sweep and reset are 0 
+add_force data 0
+run 20 ns
+#add channel 
+add_force data 0
+run 10 ns
+add_force data 0
+run 10 ns
+add_force data 1
+run 10 ns
+#last 2 dumby bits 
 add_force data 0
 run 20 ns
