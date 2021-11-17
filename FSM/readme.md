@@ -4,12 +4,12 @@ fsm_tb.tcl is test bench
 
 ***THIS IMPLEMENTATION ASSUMES THAT THE DATA IS PADDED WITH 2 BITS RATHER THAN 1***
 Ex: MCU Instruction:
-| 2 swe | (MSB) PADDED | DATA | SWE| RESET|CHANNEL|PADDED(LSB)|
+| 2 swe | (MSB) PADDED | DATA | SWE| PAD |CHANNEL|PADDED(LSB)|
 | -------------| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 |2| 11 | 12 | 1 |1 | 3 | 2 |
 
 This Means When we are Sending Instructions the data sent is as follows in the TCL File: 
-||2 SWE | (MSB) PADDED | DATA | SWE| RESET|CHANNEL|PADDED(LSB)|
+||2 SWE | (MSB) PADDED | DATA | PAD| RESET|CHANNEL|PADDED(LSB)|
 | -------------| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 |Instruction|2| 11 | 12 | 1 |1 | 3 | 2 |
 |RST| 00|0000 0000 0000 0 | 0000 0000 0000 | 0 |1 | 000 | 00 |
