@@ -9,11 +9,11 @@ Ex: MCU Instruction:
 |2| 11 | 12 | 1 |1 | 3 | 2 |
 
 This Means When we are Sending Instructions the data sent is as follows in the TCL File: 
-|| (MSB) PADDED | DATA | SWE| RESET|CHANNEL|PADDED(LSB)|
-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-|Instruction| 11 | 12 | 1 |1 | 3 | 2 |
-|RST| 0000 0000 0000 0 | 0000 0000 0000 | 0 |1 | 000 | 00 |
-|CHAN3:VOLT 4.9 | 0000 0000 0000 0 | 011111110101  | 0 |0 | 010 | 00 | 
+||2 SWE | (MSB) PADDED | DATA | SWE| RESET|CHANNEL|PADDED(LSB)|
+| -------------| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+|Instruction|2| 11 | 12 | 1 |1 | 3 | 2 |
+|RST| 00|0000 0000 0000 0 | 0000 0000 0000 | 0 |1 | 000 | 00 |
+|CHAN3:VOLT 4.9 | 00|0000 0000 0000 0 | 011111110101  | 0 |0 | 010 | 00 | 
 
 Tested:
 1. Updating voltages of all 3 channels simulation & IRL
