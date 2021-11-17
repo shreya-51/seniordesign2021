@@ -44,7 +44,7 @@ begin
     process(clk) is
     begin
     if (rising_edge(clk)) then
-            if(reset = '1' and enable = '1') then -- have to check if reset to clear to make it all equal 0
+            if(reset = '1') then -- have to check if reset to clear to make it all equal 0
                 regFArray <= (others =>(others =>'0')); -- make all registers = 0
                --Check if ELSEIF ENABLE W = 1 you WRITE REGISTER
              elsif(enable = '1') then
