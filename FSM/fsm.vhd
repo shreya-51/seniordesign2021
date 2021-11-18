@@ -42,7 +42,7 @@ begin
 		elsif (rising_edge(clk)) then
 			case state is
 				when s0=> --start stage (0 to 17 are collecting data ) 
-					 if(counter = "01111") then -- 18th clock cycle stop and add done signal 
+					 if(counter = "10000") then -- 18th clock cycle stop and add done signal 
 					   state <= s1;
 					 --elsif(counter = "00001" and DATA = '1')then
 					  --state <= s2;
