@@ -1,0 +1,183 @@
+#restart
+#add wave -position end  sim:/fpgasen/clk
+#add wave -position end  sim:/fpgasen/data
+#add wave -position end  sim:/fpgasen/reset
+#add wave -position end  sim:/fpgasen/done
+#add wave -position end  sim:/fpgasen/fsm_t/state
+#add wave -position end  sim:/fpgasen/output_data
+#add wave -position end  sim:/fpgasen/count_sig
+#add wave -position end  sim:/fpgasen/channels/Channel
+#add wave -position end  sim:/fpgasen/channels/dataIn
+#add wave -position 8  sim:/fpgasen/channels/dataOut2
+#add wave -position 8  sim:/fpgasen/channels/dataOut1
+#add wave -position 8  sim:/fpgasen/channels/dataOut3
+#1
+force data 0
+force clk 1
+run 10
+force clk 0
+run 10
+#2
+force clk 1
+run 10
+force clk 0
+run 10
+#3
+#Data 1001 1111 1001 
+force data 1
+force clk 1
+run 10
+force clk 0
+run 10
+#4
+force data 0
+force clk 1
+run 10
+force clk 0
+run 10
+#5
+force clk 1
+run 10
+force clk 0
+run 10
+#6
+force data 1
+force clk 1
+run 10
+force clk 0
+run 10
+#7
+force clk 1
+run 10
+force clk 0
+run 10
+#8
+force clk 1
+run 10
+force clk 0
+run 10
+#9
+force clk 1
+run 10
+force clk 0
+run 10
+#10
+force clk 1
+run 10
+force clk 0
+run 10
+#11
+force clk 1
+run 10
+force clk 0
+run 10
+#12
+force data 0
+force clk 1
+run 10
+force clk 0
+run 10
+#13
+force data 0
+force clk 1
+run 10
+force clk 0
+run 10
+#14
+force data 1
+force clk 1
+run 10
+force clk 0
+run 10
+#15 
+#DATA TO DO CHANNEL 7!!
+force data 1 
+force clk 1
+run 10
+force clk 0
+run 10
+#16
+force clk 1
+run 10
+force clk 0
+run 10
+#17
+force data 1 
+force clk 1
+run 10
+force clk 0
+run 10
+#18
+force clk 1
+run 10
+force clk 0
+run 10
+#19
+force clk 1
+run 10
+force clk 0
+run 10
+#20
+force clk 1
+run 10
+force clk 0
+run 10
+#21
+force clk 1
+run 10
+force clk 0
+run 10
+#22
+force clk 1
+run 10
+force clk 0
+run 10
+#23
+force clk 1
+run 10
+force clk 0
+run 10
+#24
+force clk 1
+run 10
+force clk 0
+run 10
+#25
+force clk 1
+run 10
+force clk 0
+run 10
+#26
+force clk 1
+run 10
+force clk 0
+run 10
+#27
+force clk 1
+run 10
+force clk 0
+run 10#20
+force clk 1
+run 10
+force clk 0
+run 10
+#28
+force clk 1
+run 10
+force clk 0
+run 10
+#29
+force clk 1
+run 10
+force clk 0
+run 10
+#30
+force clk 1
+run 10
+force clk 0
+run 10
+#31
+force clk 1
+run 10
+force clk 0
+run 10
