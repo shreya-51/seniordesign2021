@@ -14,11 +14,10 @@ entity FSm is
 		COUNTER    : in   std_logic_vector(4 downto 0);
 		COUNTERSWE:in  std_logic_vector(5 downto 0);
 		enableD  : out  std_logic;
+		resetD   : out  std_logic;
 		enableR  : out  std_logic;
-		enableS  : out  std_logic;
-		enableSWER: out std_logic;
 		resetSWE : out  std_logic;
-		rstReg : out std_logic;
+		rstReg   : out  std_logic;
 		DONE     : out  std_logic      
 	);
 
@@ -27,7 +26,7 @@ end entity;
 architecture rtl of FSm is
 
 	-- Build an enumerated type for the state machine
-	type state_type is (s0, s1, s2, s3,s4,s5,s6);
+	type state_type is (s0, s1, s2, s3,s4);
 
 	-- Register to hold the current state
 	signal state   : state_type;
@@ -42,33 +41,27 @@ begin
 		      state <= s0;
 		elsif (rising_edge(clk)) then
 			case state is
-				when s0=> --reset stage (32nd Clock Cycle) 
-					 if(counter = "00000" and DATA = '1')then
-					  state <= s4;
+				when s0=> --start stage (0 to 17 are collecting data ) 
+					 if(counter = "01111") then -- 18th clock cycle stop and add done signal 
+					   state <= s1;
+					 --elsif(counter = "00001" and DATA = '1')then
+					  --state <= s2;
+					 --elsif(counter = "11010" and DATA = '1')then
+					 -- resetReg <= '1';
 					 end if;
-					state <= s1;
-					resetReg <= '0';
-				when s1=> -- 1st to 31st clock cycle // read in the data 
-					 if(counter = "11101") then -- 31st clock cycle stop and add done signal 
-					   state <= s2;
-					 elsif(counter = "00001" and DATA = '1')then
-					  state <= s4;
-					 elsif(counter = "11010" and DATA = '1')then
-					  resetReg <= '1';
-					 end if;
-				when s2=> -- loading up data 
-					   state <= s3;
+				when s1=> -- READ IN DATA 
+					  state <= s2;
+				when s2=> -- RESET TO GO BACK TO S0 
+					   if(counter = "11111") then
+							state <= s0; -- go back to 0 once done
+						end if;
 			    when s3 => 
 			         resetReg <= '0';
-			         state <= s1;
-			    when s4 => -- here getting data for the SWEEP FUNCTION!!! 111110
-			          if(counterSWE = "111101") then -- 63rd clock cycle stop and add done signal 
-			             state <= s5;
+						state <= s1;
+			    when s4 => -- here getting data for the SWEEP FUNCTION!!! 
+			          if(counterSWE = "111111") then -- 31st clock cycle stop and add done signal 
+			             state <= s1;
 			          end if;
-			   when s5 => -- here getting data for the SWEEP FUNCTION!!! 111110
-			         state <= s6;
-			   when s6 =>
-			         state <= s1;
 			     when others => 
                     state <= s0;
 			end case;
@@ -83,39 +76,30 @@ begin
 			when s0 =>
 			   DONE <= '0';
 			   enableD <= '1';
-			   enableS <= '1';
 			   enableR <= '0';
-			   enableSWER <= '0';
-			   Rstreg <= resetReg;
+				resetSWE <= '0';
+				rstReg <= resetReg;
+				resetD <='0';
 			when s1 =>      
 			   DONE <= '0';
-			   enableD <= '1';
-			   enableS <= '1';
-			   enableR <= '0';
-			   resetSWE <= '0';
-			   enableSWER <= '0';
-			   Rstreg <= resetReg;
+			   enableD <= '0';
+			   enableR <= '1';
+				rstReg <= resetReg;
 			when s2 =>
-                DONE <= '0';
-                enableD <= '1';
-                enableR <= '1';
-                Rstreg <= resetReg;
+            DONE <= '1';
+            enableD <= '0';
+            enableR <= '0';
+			   rstReg <= resetReg;
+				resetD <= '1';
             when s3 =>
-                DONE <= '1';
-                enableR <= '0';
-                resetSWE <= '1';
-                Rstreg <= resetReg;
+           --     DONE <= '1';
+            --    enableR <= '0';
+            --    resetSWE <= '1';
+				--	 rstReg <= resetReg;
             when s4 =>
-                DONE <= '1';
-                enableR <= '0';
-                resetSWE <= '0';
-                enableS <= '1';
-                Rstreg <= resetReg;
-                enableSWER <= '1';
-             when s5 =>
-              enableSWER <= '0';
-             when s6 =>
-              enableSWER <= '0';
+           --    DONE <= '1';
+           --    enableR <= '0';
+            --    resetSWE <= '0';
             when others =>
                 DONE <= '0';
 		end case;
