@@ -16,7 +16,7 @@ From This: The First Bit Received is SWE and last is the padded
 ## 64 Bit Instruction: SWEEP DATA 
 ||(MSB) 1 SWE | 1 RESET | Frequency|Step |Data Stop | Data Start | CHANNEL | PADDED(LSB)|
 | -------------| -------------| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | 
-64 Bit Instruction| 1|1|10|12|12|12|3|11|
+64 Bit Instruction| 1|1|12|12|12|12|3|11|
 CHAN1:SWE: 1,2,3,4|0|0|000000000100|000010001000|001100110011|000110011001|000|00000000000|
 CHAN1:SWE: 1,2,3,4|1|0|000000000100|000010001000|001100110011|000110011001|000|00000000000|
 
