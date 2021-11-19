@@ -100,7 +100,9 @@ entity fpgasen is
  H6	  :		out	  std_logic_vector(0 to 6);
  Chan1  :      out     std_logic_Vector(11 downto 0);
  Chan2  :      out     std_logic_Vector(11 downto 0);
- Chan3  :      out     std_logic_Vector(11 downto 0)  );
+ Chan3  :      out     std_logic_Vector(11 downto 0);
+ LED0		:		out	  std_logic;
+ LED1   :		out	  std_logic);
 end fpgasen;
 
 architecture Behavioral of fpgasen is
@@ -136,10 +138,12 @@ component FSm is
 		COUNTER   : in   std_logic_vector(4 downto 0);
 		COUNTERSWE:in  std_logic_vector(5 downto 0);
 		enableD   :   out std_logic;
+		enableSWE :   out std_logic;
 		resetD    :   out std_logic;
 		enableR   :   out std_logic;
 		resetSWE : out  std_logic;
 		rstReg	: out  std_logic;
+		enableF  : out  std_logic;
 		DONE     : out  std_logic      
 	);
 end component;
@@ -161,6 +165,16 @@ component reg is
   output    :   out     std_logic_vector(31 downto 0));
 end component;
 
+component reg12 is
+  Port (
+  clk       :   in      std_logic;
+  data      :   in      std_logic_vector(11 downto 0);
+  enable    :   in      std_logic;
+  reset 		:	 in 		std_logic;
+  output    :   out     std_logic_vector(11 downto 0));
+end component;
+
+
 component regFile is
   Port (
     clk         :   in std_logic;
@@ -174,36 +188,70 @@ component regFile is
   );
 end component;
 
+component adder is
+    Port ( NUM1 	: in  STD_LOGIC_VECTOR (11 downto 0) := "000000000000";
+           NUM2 	: in  STD_LOGIC_VECTOR (11 downto 0) := "000000000000";
+			  VOLT1   : in STD_LOGIC_VECTOR (11 downto 0) := "000000000000";
+			  enable	: in std_logic;
+			  start  : in std_logic;
+			  clock  : in  std_logic;
+           SUM 	:	 out  STD_LOGIC_VECTOR (11 downto 0));
+end component;
+
+component comparator is
+    Port ( NUM1 	: in  STD_LOGIC_VECTOR (11 downto 0) := "000000000000";
+           NUM2 	: in  STD_LOGIC_VECTOR (11 downto 0) := "000000000000";
+			  clock  : in  std_logic;
+			  enable	: in  std_logic;
+           DONE	: out std_logic);
+end component;
+
+
 --counter signal 
 signal  count_sig: std_logic_vector(4 downto 0);
+signal  freqsig, stepsig,volt1sig,volt2sig: std_logic_vector(11 downto 0);
 signal  count_sigSweep: std_logic_vector(5 downto 0);
 signal output_data: std_logic_vector(31 downto 0);
 signal outSWE: std_logic_vector(63 downto 0);
-signal data1_sig, data2_sig, data3_sig: std_logic_vector(11 downto 0);
-signal enableD,enableR,resetSWE,resetReg,resetD     : std_logic;
+signal data1_sig, data2_sig, data3_sig, temp_SWE: std_logic_vector(11 downto 0);
+signal enableD,enableR,resetSWE,resetReg,resetD,enableSWE,enableF, doneSWE, enableComp    : std_logic;
 
 begin
 
 count       : counter_32 PORT MAP (enable => '1', clk => clk, reset => reset, cout => count_sig);
---count_swe   : counter_62 PORT MAP (enable => '1', clk => clk, reset => reset, cout => count_sigSweep);
-fsm_t       : fsm PORT MAP (clk =>clk, data =>data, reset => '0', counter => count_sig, counterSWE => count_sigSweep,done => done, enableD => enableD, enableR => enableR,resetSWE=>resetSWE, rstReg => resetReg, resetD => resetD);
-datainput   : reg PORT MAP (clk => clk, data => data,enable => enableD, reset => resetD ,output => output_data);
---testSWE 		   :reg64 PORT MAP(clk => clk, data => data, enable => '1', output => outSWE);
+count_swe   : counter_62 PORT MAP (enable => '1', clk => clk, reset => reset, cout => count_sigSweep);
+fsm_t       : fsm PORT MAP (clk =>clk, data =>data, reset => '0', counter => count_sig, counterSWE => count_sigSweep,done => done, enableD => enableD, enableF => enableF, enableR => enableR,resetSWE=>resetSWE, rstReg => resetReg, resetD => resetD, enableSWE => enableSWE);
+datainput   : reg PORT MAP (clk => clk, data => data,enable => enableD, reset => '0' ,output => output_data);
+testSWE 		:reg64 PORT MAP(clk => clk, data => data, enable => enableSWE, output => outSWE);
 channels    : regFile PORT MAP(clk => clk, Channel => output_data(2 downto 0), dataIn => output_data(14 downto 3), reset => output_data(15), enable => enableR, dataOut1 => data1_sig, dataOut2 => data2_sig, dataOut3 => data3_sig) ;
-
+frequency	: reg12 PORT MAP(clk => clk, data => outSWE(59 downto 48), enable => enableF, reset => '0', output => freqsig);
+step			: reg12 PORT MAP(clk => clk, data => outSWE(47 downto 36), enable => enableF, reset => '0', output => stepsig);
+volt2			: reg12 PORT MAP(clk => clk, data => outSWE(35 downto 24), enable => enableF, reset => '0', output => volt2sig);
+volt1			: reg12 PORT MAP(clk => clk, data => outSWE(23 downto 12), enable => enableF, reset => '0', output => volt1sig);
+add   		: adder PORT MAP (NUM1 => stepsig, NUM2 => temp_SWE, VOLT1 => volt1sig, enable => '1', start => '1', clock => clk, sum => temp_SWE);
+compare		: comparator PORT MAP( NUM1 => temp_SWE, NUM2 => volt2sig, DONE => doneSWE, clock => clk, enable => enableComp);
 
 --bcd segments 
-bcd1			: bcd7seg PORT MAP (B => outSWE(3 downto 0), display => H);
-bcd2:bcd7seg PORT MAP (B => outSWE(7 downto 4), display => H1);
-bcd3:bcd7seg PORT MAP (B => outSWE(11 downto 8), display => H2);
-bcd4:bcd7seg PORT MAP (B => outSWE(15 downto 12), display => H3);
-bcd5:bcd7seg PORT MAP (B => outSWE(19 downto 16), display => H4);
-bcd6:bcd7seg PORT MAP (B => outSWE(23 downto 20), display => H5);
---bcd1			: bcd7seg PORT MAP (B => data1_sig(3 downto 0), display => H);
---bcd2:bcd7seg PORT MAP (B => data1_sig(7 downto 4), display => H1);
---bcd3:bcd7seg PORT MAP (B => data2_sig(3 downto 0), display => H2);
+--bcd0			: bcd7seg PORT MAP (B => output_data(3 downto 0), display => H);
+--bcd2:bcd7seg PORT MAP (B => output_data(7 downto 4), display => H1);
+--bcd3:bcd7seg PORT MAP (B => output_data(11 downto 8), display => H2);
+--bcd4:bcd7seg PORT MAP (B => output_data(15 downto 12), display => H3);
+--bcd5:bcd7seg PORT MAP (B => outSWE(19 downto 16), display => H4);
+--bcd6:bcd7seg PORT MAP (B => outSWE(23 downto 20), display => H5);
+--these are the                         
+bcd1	: bcd7seg PORT MAP (B => data1_sig(3 downto 0), display => H);
+bcd2:bcd7seg PORT MAP (B => data1_sig(7 downto 4), display => H1);
+bcd3:bcd7seg PORT MAP (B => data2_sig(3 downto 0), display => H2);
+bcd4:bcd7seg PORT MAP (B => data2_sig(7 downto 4), display => H3);
+bcd5:bcd7seg PORT MAP (B => data3_sig(3 downto 0), display => H4);
+bcd6:bcd7seg PORT MAP (B => data3_sig(7 downto 4), display => H5);
+-- here are the testing sweep register
+--bcdt1	: bcd7seg PORT MAP (B => volt1sig(3 downto 0), display => H);
+--bcdt2:bcd7seg PORT MAP (B => volt1sig(7 downto 4), display => H1);
+--bcdt3:bcd7seg PORT MAP (B => volt1sig(11 downto 8), display => H2);
 --bcd4:bcd7seg PORT MAP (B => data2_sig(7 downto 4), display => H3);
 --bcd5:bcd7seg PORT MAP (B => data3_sig(3 downto 0), display => H4);
 --bcd6:bcd7seg PORT MAP (B => data3_sig(7 downto 4), display => H5);
-
+led0 <= resetReg;
+led1 <= enableR;
 end Behavioral;
