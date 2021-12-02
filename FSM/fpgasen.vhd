@@ -219,17 +219,17 @@ signal enableD,enableR,resetSWE,resetReg,resetD,enableSWE,enableF, doneSWE, enab
 begin
 
 count       : counter_32 PORT MAP (enable => '1', clk => clk, reset => reset, cout => count_sig);
-count_swe   : counter_62 PORT MAP (enable => '1', clk => clk, reset => reset, cout => count_sigSweep);
+--count_swe   : counter_62 PORT MAP (enable => '1', clk => clk, reset => reset, cout => count_sigSweep);
 fsm_t       : fsm PORT MAP (clk =>clk, data =>data, reset => '0', counter => count_sig, counterSWE => count_sigSweep,done => done, enableD => enableD, enableF => enableF, enableR => enableR,resetSWE=>resetSWE, rstReg => resetReg, resetD => resetD, enableSWE => enableSWE);
 datainput   : reg PORT MAP (clk => clk, data => data,enable => enableD, reset => '0' ,output => output_data);
-testSWE 		:reg64 PORT MAP(clk => clk, data => data, enable => enableSWE, output => outSWE);
+--testSWE 		:reg64 PORT MAP(clk => clk, data => data, enable => enableSWE, output => outSWE);
 channels    : regFile PORT MAP(clk => clk, Channel => output_data(2 downto 0), dataIn => output_data(14 downto 3), reset => output_data(15), enable => enableR, dataOut1 => data1_sig, dataOut2 => data2_sig, dataOut3 => data3_sig) ;
-frequency	: reg12 PORT MAP(clk => clk, data => outSWE(59 downto 48), enable => enableF, reset => '0', output => freqsig);
-step			: reg12 PORT MAP(clk => clk, data => outSWE(47 downto 36), enable => enableF, reset => '0', output => stepsig);
-volt2			: reg12 PORT MAP(clk => clk, data => outSWE(35 downto 24), enable => enableF, reset => '0', output => volt2sig);
-volt1			: reg12 PORT MAP(clk => clk, data => outSWE(23 downto 12), enable => enableF, reset => '0', output => volt1sig);
-add   		: adder PORT MAP (NUM1 => stepsig, NUM2 => temp_SWE, VOLT1 => volt1sig, enable => '1', start => '1', clock => clk, sum => temp_SWE);
-compare		: comparator PORT MAP( NUM1 => temp_SWE, NUM2 => volt2sig, DONE => doneSWE, clock => clk, enable => enableComp);
+--frequency	: reg12 PORT MAP(clk => clk, data => outSWE(59 downto 48), enable => enableF, reset => '0', output => freqsig);
+--step			: reg12 PORT MAP(clk => clk, data => outSWE(47 downto 36), enable => enableF, reset => '0', output => stepsig);
+--volt2			: reg12 PORT MAP(clk => clk, data => outSWE(35 downto 24), enable => enableF, reset => '0', output => volt2sig);
+--volt1			: reg12 PORT MAP(clk => clk, data => outSWE(23 downto 12), enable => enableF, reset => '0', output => volt1sig);
+--add   		: adder PORT MAP (NUM1 => stepsig, NUM2 => temp_SWE, VOLT1 => volt1sig, enable => '1', start => '1', clock => clk, sum => temp_SWE);
+--compare		: comparator PORT MAP( NUM1 => temp_SWE, NUM2 => volt2sig, DONE => doneSWE, clock => clk, enable => enableComp);
 
 --bcd segments 
 --bcd0			: bcd7seg PORT MAP (B => output_data(3 downto 0), display => H);
