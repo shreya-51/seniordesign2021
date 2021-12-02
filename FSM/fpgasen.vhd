@@ -1,3 +1,115 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity FSm is
+
+	port(
+		CLK		  : in	std_logic;
+		DATA        : in   std_logic;
+		RESET         : in   std_logic;
+		COUNTER    : in   std_logic_vector(4 downto 0);
+		COUNTERSWE:in  std_logic_vector(5 downto 0);
+		enableD  : out  std_logic;
+		enableSWE: out  std_logic;
+		resetD   : out  std_logic;
+		enableR  : out  std_logic;
+		resetSWE : out  std_logic;
+		rstReg   : out  std_logic;
+		enableF  : out  std_logic;
+		DONE     : out  std_logic      
+	);
+
+end entity;
+
+architecture rtl of FSm is
+
+	-- Build an enumerated type for the state machine
+	type state_type is (s0, s1, s2, s3,s4,s5);
+
+	-- Register to hold the current state
+	signal state   : state_type;
+
+
+begin
+	-- Logic to advance to the next state
+	process (CLK)
+	begin
+		if RESET = '1' then 
+		      state <= s0;
+		elsif (rising_edge(clk)) then
+			case state is
+				when s0=> --start stage (0 to 17 are collecting data ) 
+					 if(counter = "10000") then -- 18th clock cycle stop and add done signal 
+					   state <= s1;
+					 elsif(counter = "00000" and DATA = '1')then
+						state <= s3;
+					 end if;
+				when s1=> -- READ IN DATA 
+					  state <= s2; 
+				when s2=> -- RESET TO GO BACK TO S0 
+						if(counter = "11111") then
+							state <= s0; -- go back to 0 once done
+						end if;
+			    when s3 =>  -- for sweep function hang out in s3 until 
+			         if(counterswe = "111101") then
+							state <= s4;
+						end if;
+			    when s4 => -- here getting data for the SWEEP FUNCTION!!! 
+			          if(counterSWE = "111111") then -- 31st clock cycle stop and add done signal 
+			             state <= s5;
+			          end if;
+				 when s5 => -- this is the ADDING SWEEP PHASE 
+						   state <= s0;
+			     when others => 
+                    state <= s0;
+			end case;
+		end if;
+	end process;
+
+	-- Output depends solely on the current state
+	process (state)
+	begin
+
+		case state is
+			when s0 =>
+			   DONE <= '0';
+			   enableD <= '1';
+				enableSWE <= '1';
+			   enableR <= '0';
+				resetSWE <= '0';
+				rstReg <= '0';
+				resetD <='0';
+				enableF <= '0';
+			when s1 =>      
+			   DONE <= '0';
+			   enableD <= '0';
+			   enableR <= '1';
+				rstReg <= '0';
+			when s2 =>
+            DONE <= '1';
+            enableD <= '0';
+            enableR <= '0';
+			   rstReg <= '0';
+				resetD <= '1';
+            when s3 =>
+				enableSWE <= '1';
+           --     DONE <= '1';
+            --    enableR <= '0';
+            --    resetSWE <= '1';
+				--	 rstReg <= resetReg;
+            when s4 =>
+				enableSWE <= '0';
+				enableF <= '1';
+           --    DONE <= '1';
+           --    enableR <= '0';
+            --    resetSWE <= '0';
+            when others =>
+                DONE <= '0';
+		end case;
+	end process;
+
+end rtl;
+
 library IEEE;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
