@@ -1,3 +1,4 @@
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
@@ -20,8 +21,9 @@ process(clk)
   end process;
   output <= out_sig;
 end Behavioral;
-library ieee;
-use ieee.std_logic_1164.all;
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
 
 entity FSm is
 
